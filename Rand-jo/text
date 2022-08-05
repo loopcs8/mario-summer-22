@@ -1,0 +1,40 @@
+player.onHeadbutt((obj) => {
+    //coin
+    if (obj.is("surprise-coin")) {
+      destroy(obj);
+      gameLevel.spawn("u", obj.gridPos); //unboxed
+      gameLevel.spawn("$", obj.gridPos.sub(0, 1));
+    }
+    if (obj.is("surprise-mushroom")) {
+      destroy(obj);
+      gameLevel.spawn("u", obj.gridPos); //unboxed
+      gameLevel.spawn("m", obj.gridPos.sub(0, 1));
+    }
+  });
+
+  player.onCollide("coin", (obj) => {
+    destroy(obj);
+  });
+
+  player.onCollide("mushroom", (obj) => {
+    destroy(obj);
+  });
+  onUpdate("mushroom", (obj) => {
+    obj.move(20, 0);
+  });
+
+  onUpdate("gomba", (obj) => {
+    obj.move(-20, 0);
+  });
+  let isGrounded = false;
+  player.onCollide("gomba", (obj) => {
+    if (isGrounded == true) {
+      alert("lose");
+    } else {
+      destroy(obj);
+    }
+  });
+  //bl2a5eeeer
+  player.onUpdate(() => {
+    isGrounded = player.isGrounded();
+  });
