@@ -11,12 +11,19 @@ loadSprite("coin", "coin.png");
 loadSprite("block", "block.png");
 loadSprite("surprise", "surprise.png");
 loadSprite("unboxed", "unboxed.png");
+loadSprite("pipe", "pipe_up.png");
 loadSprite("mushroom", "mushroom.png");
 loadSound("jumpSound", "jumpSound.mp3");
 loadSound("gameSound", "gameSound.mp3");
 loadSprite("goomba", "evil_mushroom.png");
 
-scene("win", () => {});
+scene("win", () => {
+  add([
+    pos(width() / 2, height() / 2),
+    origin("center"),
+    text("mbrook!!\nBATATAA"),
+  ]);
+});
 
 scene("lose", () => {
   add([
@@ -40,7 +47,7 @@ scene("game", () => {
     "                              ",
     "     ?   %                     ",
     "                               ",
-    "             $           g     ",
+    "             $           g   p  ",
     "==================== ==========",
   ];
 
@@ -54,6 +61,7 @@ scene("game", () => {
     x: () => [sprite("unboxed"), area(), solid()],
     "%": () => [sprite("surprise"), area(), solid(), "surprise-mushroom"],
     g: () => [sprite("goomba"), area(), solid(), "goomba"],
+    p: () => [sprite("pipe"), area(), solid(), "pipe"],
   };
 
   const gameLevel = addLevel(map, mapKeys);
@@ -65,6 +73,7 @@ scene("game", () => {
     body(),
     origin("bot"),
     area(),
+    big(),
   ]);
 
   onKeyDown("right", () => {
@@ -75,10 +84,12 @@ scene("game", () => {
     player.move(-200, 0);
   });
 
+  let isJumping = false;
   onKeyDown("space", () => {
     if (player.isGrounded()) {
       play("jumpSound");
       player.jump(500);
+      isJumping = true;
     }
   });
 
@@ -106,6 +117,7 @@ scene("game", () => {
   player.onCollide("mushroom", (mushroom) => {
     destroy(mushroom);
     shake(20);
+    player.biggify(4);
   });
   onUpdate("mushroom", (mushroom) => {
     mushroom.move(20, 0);
@@ -114,7 +126,25 @@ scene("game", () => {
     goomba.move(-20, 0);
   });
   player.onCollide("goomba", (goomba) => {
-    go("lose");
+    if (isJumping) {
+      destroy(goomba);
+    } else {
+      go("lose");
+    }
+  });
+
+  player.onCollide("pipe", () => {
+    onKeyPress("down", () => {
+      go("win");
+    });
+  });
+
+  player.onUpdate(() => {
+    if (player.isGrounded()) {
+      isJumping = false;
+    } else {
+      isJumping = true;
+    }
   });
 });
 
