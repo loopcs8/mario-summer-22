@@ -18,22 +18,16 @@ loadSound("gameSound", "gameSound.mp3");
 
 scene("win", () => {
   add([
-  pos(width() / 2, height() / 2), 
-  origin("center"), 
-  text("Good Job You win!")]);
-});
-
-scene("lose", () => {
-  add([
-  pos(width() / 2, height() / 2),
-  origin("center"), 
-  text("GAME OVER!!")]);
+    pos(width() / 2, height() / 2),
+    origin("center"),
+    text("Good Job You win!"),
+  ]);
 });
 
 scene("game", () => {
   layers(["bg", "obj", "ui"], "obj");
   play("gameSound");
-  
+
   const map = [
     "                                                  m                                                          ",
     "                      xx??xx                     xxxx                   xxxxxxx                     $$$",
@@ -49,7 +43,7 @@ scene("game", () => {
   let score = 0;
   const scoreLabel = add([
     text("score:\n" + score, {
-      size: 48, 
+      size: 48,
     }),
     origin("center"),
     pos(30, -120),
@@ -58,12 +52,20 @@ scene("game", () => {
       value: score,
     },
   ]);
+
+  scene("lose", () => {
+    add([
+      pos(width() / 2, height() / 2),
+      origin("center"),
+      text("GAME OVER!!\nYour score is: " + scoreLabel.value),
+    ]);
+  });
   const mapkeys = {
     width: 20,
     height: 20,
     "=": () => [sprite("block"), solid(), area()],
     $: () => [sprite("coin"), area(), "coin"],
-    m: () => [sprite("mush"), area(),body(), "mush"],
+    m: () => [sprite("mush"), area(), body(), "mush"],
     "*": () => [sprite("evilmushroom"), area(), body(), "evilmushroom"],
     "?": () => [sprite("surprise"), solid(), area(), "surprise-coin"],
     "%": () => [sprite("surprise"), solid(), area(), "surprise-mushroom"],
@@ -80,7 +82,7 @@ scene("game", () => {
     body(),
     origin("bot"),
     area(),
-    big()
+    big(),
   ]);
 
   onKeyDown("right", () => {
@@ -89,12 +91,12 @@ scene("game", () => {
   onKeyDown("left", () => {
     player.move(-200, 0);
   });
-  let isJumping=false
+  let isJumping = false;
   onKeyDown("space", () => {
     if (player.isGrounded()) {
       play("jumpSound");
       player.jump(500);
-      isJumping=true
+      isJumping = true;
     }
   });
   player.action(() => {
@@ -118,28 +120,26 @@ scene("game", () => {
 
   player.onUpdate(() => {
     scoreLabel.pos.x = player.pos.x - 300;
-    scoreLabel.pos.y = player.pos.y - 500;
+    scoreLabel.pos.y = player.pos.y - 280;
     camPos(player.pos);
   });
   player.onCollide("coin", (coin) => {
     destroy(coin);
-    scoreLabel.value += 1
-    scoreLabel.text = "Score:" + scoreLabel.value
+    scoreLabel.value += 1;
+    scoreLabel.text = "Score:" + scoreLabel.value;
   });
   player.onCollide("mush", (mush) => {
     destroy(mush);
-    player.biggify(4)
+    player.biggify(4);
   });
   player.onCollide("evilmushroom", (evilmushroom) => {
-    if (isJumping)
-    {
-      destroy (evilmushroom)
-    }
-    else{
-    shake(20);
-    wait(1, () => {
-      go("lose");
-    });
+    if (isJumping) {
+      destroy(evilmushroom);
+    } else {
+      shake(20);
+      wait(1, () => {
+        go("lose");
+      });
     }
   });
   player.onCollide("castle", (castle) => {
@@ -153,17 +153,13 @@ scene("game", () => {
   onUpdate("evilmushroom", (evilmushroom) => {
     evilmushroom.move(-20, 0);
   });
-  player.onUpdate(()=>{
-    if(player.isGrounded())
-    {
+  player.onUpdate(() => {
+    if (player.isGrounded()) {
       isJumping = false;
-    }
-    else{
+    } else {
       isJumping = true;
     }
-  })
-
+  });
 });
-
 
 go("game");
