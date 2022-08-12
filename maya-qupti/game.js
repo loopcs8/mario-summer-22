@@ -45,6 +45,19 @@ scene("game", () => {
     "==========================================================================================                    $$$$$$$$$$$$$$             ",
     "================================================================================================================================   ",
   ];
+
+  let score = 0;
+  const scoreLabel = add([
+    text("score:\n" + score, {
+      size: 48, 
+    }),
+    origin("center"),
+    pos(30, -120),
+    layer("ui"),
+    {
+      value: score,
+    },
+  ]);
   const mapkeys = {
     width: 20,
     height: 20,
@@ -104,12 +117,14 @@ scene("game", () => {
   });
 
   player.onUpdate(() => {
+    scoreLabel.pos.x = player.pos.x - 300;
+    scoreLabel.pos.y = player.pos.y - 500;
     camPos(player.pos);
   });
   player.onCollide("coin", (coin) => {
     destroy(coin);
-    score.value += 1
-    score.text = "Score:" + score.value
+    scoreLabel.value += 1
+    scoreLabel.text = "Score:" + scoreLabel.value
   });
   player.onCollide("mush", (mush) => {
     destroy(mush);
@@ -147,25 +162,8 @@ scene("game", () => {
       isJumping = true;
     }
   })
-  const score = add([
-    text("Score: 0",{
-      size: 20, // 48 pixels tall
-      width: 320, // it'll wrap to next line when width exceeds this value
-      font: "sink",
-    },
-    layer("ui")),
-    pos(24, 24),
-    { value: 0 },
-  ])
 
-  add([
-    pos(24, 24),
-    text("", {
-        size: 20, // 48 pixels tall
-        width: 320, // it'll wrap to next line when width exceeds this value
-        font: "sink", // there're 4 built-in fonts: "apl386", "apl386o", "sink", and "sinko"
-    }),
-])
 });
+
 
 go("game");
